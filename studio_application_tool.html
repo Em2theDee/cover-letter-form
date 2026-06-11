@@ -1,0 +1,179 @@
+
+<style>
+  .app-tool { padding: 1.5rem 0; max-width: 680px; }
+  .tab-row { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .tab-btn { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+  .tab-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .section-label { font-size: 12px; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .field-row { margin-bottom: 1rem; }
+  .field-row label { display: block; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .field-row input { width: 100%; box-sizing: border-box; }
+  .email-preview { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); padding: 1.25rem; margin-top: 1.5rem; }
+  .email-meta { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 12px; }
+  .email-subject { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 12px; padding-bottom: 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .email-body { font-size: 14px; color: var(--color-text-primary); line-height: 1.75; white-space: pre-wrap; }
+  .highlight { background: rgba(255, 200, 0, 0.25); border-radius: 3px; padding: 0 2px; }
+  .copy-btn { margin-top: 1rem; width: 100%; padding: 10px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-primary); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .copy-btn:hover { background: var(--color-background-secondary); }
+  .divider { height: 0.5px; background: var(--color-border-tertiary); margin: 1.5rem 0; }
+  .template-section { margin-bottom: 1rem; }
+  .template-label { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+  textarea { width: 100%; box-sizing: border-box; font-size: 13px; line-height: 1.7; color: var(--color-text-primary); background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; resize: vertical; font-family: var(--font-sans); }
+  textarea:focus { outline: none; border-color: var(--color-border-primary); }
+  .ready-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); background: var(--color-background-success); color: var(--color-text-success); margin-left: 8px; vertical-align: middle; }
+  .incomplete-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); background: var(--color-background-warning); color: var(--color-text-warning); margin-left: 8px; vertical-align: middle; }
+</style>
+
+<div class="app-tool">
+  <h2 class="sr-only">Studio application quick-fire tool — write your template once, fill studio details each time</h2>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="switchTab('indie')">Indie / boutique</button>
+    <button class="tab-btn" onclick="switchTab('mid')">Mid-size agency</button>
+    <button class="tab-btn" onclick="switchTab('prestige')">Prestige studio</button>
+  </div>
+
+  <div id="pane-indie" class="pane">
+    <div class="section-label">Your template — write this once in your own voice</div>
+    <div class="template-section">
+      <div class="template-label">Subject line</div>
+      <input type="text" id="indie-subject" placeholder="Write your subject line..." oninput="renderPreview('indie')" style="width:100%; box-sizing:border-box;" />
+    </div>
+    <div class="template-section">
+      <div class="template-label">Body — use {studio} for studio name, {specific} for the one detail you swap each time</div>
+      <textarea id="indie-body" rows="10" placeholder="Write your email body here..." oninput="renderPreview('indie')"></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Fill in per application</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field-row">
+        <label>Studio name</label>
+        <input type="text" id="indie-studio" placeholder="e.g. Studio Dumbar" oninput="renderPreview('indie')" />
+      </div>
+      <div class="field-row">
+        <label>Contact name</label>
+        <input type="text" id="indie-contact" placeholder="e.g. Rosa" oninput="renderPreview('indie')" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>The specific thing you noticed about their work</label>
+      <input type="text" id="indie-specific" placeholder="e.g. the way you used motion in the Volta rebrand" oninput="renderPreview('indie')" />
+    </div>
+
+    <div class="email-preview">
+      <div class="email-meta">To: <span id="indie-to">—</span></div>
+      <div class="email-subject" id="indie-subj-out">—</div>
+      <div class="email-body" id="indie-body-out">Your preview will appear here once you write your template above.</div>
+      <button class="copy-btn" onclick="copyEmail('indie')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+    </div>
+  </div>
+
+  <div id="pane-mid" class="pane" style="display:none">
+    <div class="section-label">Your template — write this once in your own voice</div>
+    <div class="template-section">
+      <div class="template-label">Subject line</div>
+      <input type="text" id="mid-subject" placeholder="Write your subject line..." oninput="renderPreview('mid')" style="width:100%; box-sizing:border-box;" />
+    </div>
+    <div class="template-section">
+      <div class="template-label">Body — use {studio} for studio name, {specific} for the one detail you swap each time</div>
+      <textarea id="mid-body" rows="10" placeholder="Write your email body here..." oninput="renderPreview('mid')"></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Fill in per application</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field-row">
+        <label>Studio name</label>
+        <input type="text" id="mid-studio" placeholder="e.g. Wolff Olins" oninput="renderPreview('mid')" />
+      </div>
+      <div class="field-row">
+        <label>Contact name</label>
+        <input type="text" id="mid-contact" placeholder="e.g. James" oninput="renderPreview('mid')" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>The specific thing you noticed about their work</label>
+      <input type="text" id="mid-specific" placeholder="e.g. the Airbnb identity work" oninput="renderPreview('mid')" />
+    </div>
+
+    <div class="email-preview">
+      <div class="email-meta">To: <span id="mid-to">—</span></div>
+      <div class="email-subject" id="mid-subj-out">—</div>
+      <div class="email-body" id="mid-body-out">Your preview will appear here once you write your template above.</div>
+      <button class="copy-btn" onclick="copyEmail('mid')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+    </div>
+  </div>
+
+  <div id="pane-prestige" class="pane" style="display:none">
+    <div class="section-label">Your template — write this once in your own voice</div>
+    <div class="template-section">
+      <div class="template-label">Subject line</div>
+      <input type="text" id="prestige-subject" placeholder="Write your subject line..." oninput="renderPreview('prestige')" style="width:100%; box-sizing:border-box;" />
+    </div>
+    <div class="template-section">
+      <div class="template-label">Body — use {studio} for studio name, {specific} for the one detail you swap each time</div>
+      <textarea id="prestige-body" rows="10" placeholder="Write your email body here..." oninput="renderPreview('prestige')"></textarea>
+    </div>
+
+    <div class="divider"></div>
+    <div class="section-label">Fill in per application</div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+      <div class="field-row">
+        <label>Studio name</label>
+        <input type="text" id="prestige-studio" placeholder="e.g. Pentagram" oninput="renderPreview('prestige')" />
+      </div>
+      <div class="field-row">
+        <label>Contact name</label>
+        <input type="text" id="prestige-contact" placeholder="e.g. Marina" oninput="renderPreview('prestige')" />
+      </div>
+    </div>
+    <div class="field-row">
+      <label>The specific thing you noticed (optional for prestige)</label>
+      <input type="text" id="prestige-specific" placeholder="e.g. the recent MIT Media Lab work" oninput="renderPreview('prestige')" />
+    </div>
+
+    <div class="email-preview">
+      <div class="email-meta">To: <span id="prestige-to">—</span></div>
+      <div class="email-subject" id="prestige-subj-out">—</div>
+      <div class="email-body" id="prestige-body-out">Your preview will appear here once you write your template above.</div>
+      <button class="copy-btn" onclick="copyEmail('prestige')"><i class="ti ti-copy" aria-hidden="true"></i> Copy email</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.pane').forEach(p => p.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pane-' + tab).style.display = 'block';
+  event.target.classList.add('active');
+}
+
+function renderPreview(tab) {
+  const studio = (document.getElementById(tab + '-studio').value || '').trim();
+  const contact = (document.getElementById(tab + '-contact').value || '').trim();
+  const specific = (document.getElementById(tab + '-specific').value || '').trim();
+  let body = document.getElementById(tab + '-body').value || '';
+  let subject = document.getElementById(tab + '-subject').value || '';
+
+  body = body.replace(/\{studio\}/g, studio || '{studio}').replace(/\{specific\}/g, specific || '{specific}');
+  subject = subject.replace(/\{studio\}/g, studio || '{studio}').replace(/\{specific\}/g, specific || '{specific}');
+
+  document.getElementById(tab + '-to').textContent = contact ? contact + ' at ' + (studio || '…') : '—';
+  document.getElementById(tab + '-subj-out').textContent = subject || '—';
+  document.getElementById(tab + '-body-out').textContent = body || 'Your preview will appear here once you write your template above.';
+}
+
+function copyEmail(tab) {
+  const subject = document.getElementById(tab + '-subj-out').textContent;
+  const body = document.getElementById(tab + '-body-out').textContent;
+  const text = 'Subject: ' + subject + '\n\n' + body;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="ti ti-check" aria-hidden="true"></i> Copied';
+    setTimeout(() => btn.innerHTML = orig, 1500);
+  });
+}
+</script>

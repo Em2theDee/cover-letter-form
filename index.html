@@ -71,7 +71,7 @@
   .layout {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0;
+    gap: 0 64px;
     align-items: start;
   }
 
@@ -314,6 +314,26 @@
     transition: transform 0.08s ease;
   }
 
+  .clear-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    border-radius: 0;
+    transition: color 0.1s ease, border-color 0.1s ease;
+  }
+
+  .clear-btn:hover { color: var(--accent); border-color: var(--accent); }
+
   .copy-btn:hover { transform: translateY(-1px); }
   .copy-btn:active { transform: translateY(0); }
   .copy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
@@ -387,8 +407,15 @@
         <div class="field">
           <label>Approach</label>
           <div class="radio-group">
-            <label><input type="radio" name="approach" value="cold" checked onchange="build()" /><span>Cold</span></label>
-            <label><input type="radio" name="approach" value="posted" onchange="build()" /><span>Posted role</span></label>
+            <label><input type="radio" name="approach" value="cold" checked onchange="toggleTitle(this)" /><span>Cold</span></label>
+            <label><input type="radio" name="approach" value="posted" onchange="toggleTitle(this)" /><span>Posted role</span></label>
+          </div>
+        </div>
+
+        <div id="job-title-wrap" style="display:none;">
+          <div class="field">
+            <label for="job_title">Job title</label>
+            <input type="text" id="job_title" placeholder="Junior identity designer" oninput="build()" />
           </div>
         </div>
 
@@ -405,23 +432,34 @@
       <section>
         <div class="section-head">
           <div class="section-num">02</div>
-          <div class="section-title">Who they are.</div>
+          <div class="section-title">Their work.</div>
         </div>
 
         <div class="field">
-          <label for="project">One project you genuinely rated — name it</label>
-          <input type="text" id="project" placeholder="The Volta rebrand" oninput="build()" />
+          <label for="project">First project — the one that kept bringing you back</label>
+          <input type="text" id="project" placeholder="After Hours" oninput="build()" />
         </div>
 
         <div class="field">
-          <label for="why">Why that project — the actual craft move</label>
-          <p class="hint">Be specific. Two sentences max. This becomes the observation hook.</p>
+          <label for="why">Why — the actual craft move</label>
+          <p class="hint">Specific. Two sentences max. This is the observation hook.</p>
           <textarea id="why" rows="3" placeholder="The type rhythm pulled from the music's syncopation. A system that comes from the thing itself instead of sitting on top of it." oninput="build()"></textarea>
         </div>
 
         <div class="field">
+          <label for="proj2">Second project (optional)</label>
+          <input type="text" id="proj2" placeholder="Art on the Mart" oninput="build()" />
+        </div>
+
+        <div class="field">
+          <label for="why2">Why that one</label>
+          <p class="hint">Leave blank if no second project.</p>
+          <textarea id="why2" rows="2" placeholder="The gradients are so purposeful they stop being gradients." oninput="build()"></textarea>
+        </div>
+
+        <div class="field">
           <label for="alt_hook">No specific project? Hook instead</label>
-          <p class="hint">Location, client roster, position in industry, the craft problem the role poses. Leave blank if section above is filled.</p>
+          <p class="hint">Location, client roster, craft problem the role poses. Leave blank if above is filled.</p>
           <input type="text" id="alt_hook" placeholder="They're doing music and culture work from the heart of where it actually happens." oninput="build()" />
         </div>
       </section>
@@ -429,17 +467,13 @@
       <section>
         <div class="section-head">
           <div class="section-num">03</div>
-          <div class="section-title">What you bring.</div>
+          <div class="section-title">Your work.</div>
         </div>
 
         <div class="field">
-          <label for="proj1">Strongest project in your portfolio</label>
-          <input type="text" id="proj1" placeholder="Radiant Grid" oninput="build()" />
-        </div>
-
-        <div class="field">
-          <label for="proj2">Second project (optional)</label>
-          <input type="text" id="proj2" placeholder="Apex Athletes" oninput="build()" />
+          <label for="proj1">Portfolio bridge — what you do that connects to their work</label>
+          <p class="hint">Completes the sentence: "Within my portfolio I've..."</p>
+          <input type="text" id="proj1" placeholder="been building brand systems that move across Radiant Grid and Apex Athletes" oninput="build()" />
         </div>
 
         <div class="field">
@@ -452,11 +486,11 @@
       <section>
         <div class="section-head">
           <div class="section-num">04</div>
-          <div class="section-title">The gap.</div>
+          <div class="section-title">Anything extra.</div>
         </div>
 
         <div class="field">
-          <label>Does this role want something your portfolio doesn't show?</label>
+          <label>Gap — something the role wants your portfolio doesn't show?</label>
           <div class="radio-group">
             <label><input type="radio" name="gap" value="no" checked onchange="toggleGap(this)" /><span>No gap</span></label>
             <label><input type="radio" name="gap" value="yes" onchange="toggleGap(this)" /><span>Yes</span></label>
@@ -470,27 +504,10 @@
             <textarea id="gap_detail" rows="2" placeholder="Motion isn't in the PDF. After Effects is part of how I work — can show a reel if useful." oninput="build()"></textarea>
           </div>
         </div>
-      </section>
-
-      <section>
-        <div class="section-head">
-          <div class="section-num">05</div>
-          <div class="section-title">The ask.</div>
-        </div>
 
         <div class="field">
-          <label>What are you actually asking for?</label>
-          <div class="radio-group">
-            <label><input type="radio" name="ask" value="interview" checked onchange="build()" /><span>Interview</span></label>
-            <label><input type="radio" name="ask" value="coffee" onchange="build()" /><span>Coffee</span></label>
-            <label><input type="radio" name="ask" value="call" onchange="build()" /><span>Call</span></label>
-            <label><input type="radio" name="ask" value="radar" onchange="build()" /><span>Keep on radar</span></label>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="extra">Anything extra</label>
-          <p class="hint">A connection, shared contact, moment you crossed paths, reason this studio specifically matters. Leave blank if nothing.</p>
+          <label for="extra">One specific extra thing</label>
+          <p class="hint">A connection, shared contact, reason this studio specifically matters. Leave blank if nothing.</p>
           <input type="text" id="extra" placeholder="Jack Llewellyn judged Radiant Grid at Pentagram and gave feedback." oninput="build()" />
         </div>
       </section>
@@ -521,7 +538,7 @@
           <div class="meter-value" id="m-hook">—</div>
         </div>
         <div class="meter">
-          <div class="meter-label">Ask</div>
+          <div class="meter-label">Closer</div>
           <div class="meter-value" id="m-ask">—</div>
         </div>
       </div>
@@ -530,6 +547,7 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="0"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Copy email
       </button>
+      <button class="clear-btn" onclick="clearAll()">Clear all</button>
     </div>
 
   </div>
@@ -542,6 +560,11 @@
 <script>
   function v(id) { return (document.getElementById(id).value || '').trim(); }
   function radio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+
+  function toggleTitle(el) {
+    document.getElementById('job-title-wrap').style.display = el.value === 'posted' ? 'block' : 'none';
+    build();
+  }
 
   function toggleGap(el) {
     document.getElementById('gap-detail-wrap').classList.toggle('visible', el.value === 'yes');
@@ -560,6 +583,7 @@
     const contact  = v('contact')  || 'there';
     const project  = v('project');
     const why      = v('why');
+    const why2     = v('why2');
     const alt_hook = v('alt_hook');
     const proj1    = v('proj1');
     const proj2    = v('proj2');
@@ -567,31 +591,37 @@
     const gap_det  = v('gap_detail');
     const extra    = v('extra');
     const approach = radio('approach') || 'cold';
-    const ask      = radio('ask') || 'interview';
     const hasGap   = radio('gap') === 'yes';
 
+    const job_title = v('job_title') || 'junior identity designer';
     const subject = approach === 'cold'
       ? 'Designer who builds brands that move — portfolio attached'
-      : 'Application — junior identity designer';
+      : `${job_title} application - Darius Danciu`;
 
     let body = `Hi ${contact},\n\n`;
 
+    // First project observation
     if (project && why) {
-      body += `I've been following ${studio}'s work — ${project} stuck with me. ${why}\n\n`;
+      body += `I've spent some time going through your work. I would say ${project} has had me coming back to it a few times. ${why}\n\n`;
     } else if (project) {
-      body += `I've been following ${studio}'s work — ${project} is the kind of thinking I want to be around.\n\n`;
+      body += `I've spent some time going through your work. I would say ${project} has had me coming back to it a few times.\n\n`;
     } else if (alt_hook) {
-      body += `I've been looking at ${studio} — ${alt_hook}.\n\n`;
+      body += `${alt_hook}\n\n`;
     }
 
-    body += `I'm a junior identity designer. I work digitally-first — every brand system I build is designed to move, not just sit on a page. Logo, UI, motion, occasionally print.\n\n`;
+    // Second project observation (optional)
+    if (proj2 && why2) {
+      body += `The other project I genuinely liked was the ${proj2} work. ${why2}\n\n`;
+    } else if (proj2) {
+      body += `The other project I genuinely liked was the ${proj2} work.\n\n`;
+    }
 
+    // Portfolio bridge
     if (proj1) {
-      body += `The work that shows this best: ${proj1}`;
-      if (proj2) body += `, and ${proj2}`;
-      body += `.\n\n`;
+      body += `Within my portfolio I've ${proj1}.\n\n`;
     }
 
+    // Gap / extra info
     if (hasGap && gap_det) {
       body += `${gap_det}\n\n`;
     }
@@ -600,13 +630,8 @@
       body += `${extra}\n\n`;
     }
 
-    const asks = {
-      interview: `Would love the chance to come in.\n\nPortfolio attached.`,
-      coffee:    `If you ever have 20 minutes for a coffee, I'd take it.\n\nPortfolio attached.`,
-      call:      `Happy to jump on a call if that's easier.\n\nPortfolio attached.`,
-      radar:     `Not expecting an opening — but if you're ever looking, I'd genuinely love to be in the mix.\n\nPortfolio attached.`
-    };
-    body += asks[ask];
+    // Fixed closer — always the same
+    body += `If anything in the portfolio catches you, I'd love to talk about it.\n\nThank you for taking the time to read this.\n\nHave a nice day,\nDarius`;
 
     if (mismatch && mismatch.toLowerCase() !== 'none' && mismatch !== '') {
       body += `\n\n(${mismatch})`;
@@ -619,11 +644,11 @@
 
     const wEl = document.getElementById('m-words');
     wEl.textContent = words;
-    wEl.className = 'meter-value ' + (words < 60 ? 'warn' : words <= 130 ? 'good' : 'bad');
+    wEl.className = 'meter-value ' + (words < 60 ? 'warn' : words <= 250 ? 'good' : 'bad');
 
     const lEl = document.getElementById('m-length');
     if (words < 60)        { lEl.textContent = 'Too short'; lEl.className = 'meter-value warn'; }
-    else if (words <= 130) { lEl.textContent = 'Good';      lEl.className = 'meter-value good'; }
+    else if (words <= 250) { lEl.textContent = 'Good';      lEl.className = 'meter-value good'; }
     else                   { lEl.textContent = 'Too long';  lEl.className = 'meter-value bad';  }
 
     const hasHook = !!(project || alt_hook);
@@ -634,8 +659,19 @@
     hEl.className = 'meter-value ' + hookQ;
 
     const aEl = document.getElementById('m-ask');
-    aEl.textContent = ask.charAt(0).toUpperCase() + ask.slice(1);
+    aEl.textContent = 'Closer';
     aEl.className = 'meter-value good';
+  }
+
+  function clearAll() {
+    document.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+    document.querySelector('input[name="approach"][value="cold"]').checked = true;
+    document.querySelector('input[name="send"][value="email"]').checked = true;
+    document.querySelector('input[name="gap"][value="no"]').checked = true;
+    document.querySelector('input[name="ask"][value="interview"]').checked = true;
+    document.getElementById('gap-detail-wrap').classList.remove('visible');
+    document.getElementById('job-title-wrap').style.display = 'none';
+    build();
   }
 
   function copyAll() {

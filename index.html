@@ -1,590 +1,654 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Application builder — Darius</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Application builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2EFE7;
+    --ink: #1A1A1A;
+    --ink-soft: #5A5A5A;
+    --line: #1A1A1A;
+    --accent: #E54B1F;
+    --field-bg: #FFFFFF;
+    --field-border: #1A1A1A;
+  }
 
-    :root {
-      --bg: #ffffff;
-      --bg-secondary: #f5f5f3;
-      --bg-tertiary: #efefed;
-      --text-primary: #1a1a18;
-      --text-secondary: #6b6b67;
-      --text-tertiary: #9e9e99;
-      --border: rgba(0,0,0,0.1);
-      --border-mid: rgba(0,0,0,0.18);
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --green: #2d6a4f;
-      --green-bg: #eaf4ee;
-      --amber: #92400e;
-      --amber-bg: #fef3c7;
-      --red: #991b1b;
-      --red-bg: #fee2e2;
-      --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      --mono: 'SF Mono', 'Fira Mono', 'Consolas', monospace;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #1a1a18;
-        --bg-secondary: #252523;
-        --bg-tertiary: #2e2e2b;
-        --text-primary: #f0f0ee;
-        --text-secondary: #a0a09b;
-        --text-tertiary: #6b6b67;
-        --border: rgba(255,255,255,0.08);
-        --border-mid: rgba(255,255,255,0.15);
-        --green: #6ee7b7;
-        --green-bg: #0d2e1f;
-        --amber: #fcd34d;
-        --amber-bg: #2a1f05;
-        --red: #fca5a5;
-        --red-bg: #2a0d0d;
-      }
-    }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    line-height: 1.55;
+    padding: 24px 16px 80px;
+    min-height: 100vh;
+  }
 
-    html { font-size: 16px; }
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
 
-    body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text-primary);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+  header {
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
 
-    /* ── Header ── */
-    .header {
-      padding: 2rem 2rem 1.5rem;
-      border-bottom: 0.5px solid var(--border);
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .header-label {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-      margin-bottom: 4px;
-    }
-    .header h1 {
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .header p {
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: var(--ink-soft);
+  }
 
-    /* ── Layout ── */
-    .main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3rem;
-      align-items: start;
-    }
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 56px;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin-bottom: 16px;
+  }
 
-    @media (max-width: 720px) {
-      .main { grid-template-columns: 1fr; gap: 2rem; padding: 1.25rem; }
-      .header { padding: 1.25rem 1.25rem 1rem; }
-      .preview-col { position: static; }
-    }
+  .lede {
+    font-size: 14px;
+    color: var(--ink-soft);
+    max-width: 480px;
+    line-height: 1.6;
+  }
 
-    /* ── Form side ── */
-    .form-col {}
-    .col-label {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-      margin-bottom: 1.5rem;
-    }
+  /* Two-column layout */
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: start;
+  }
 
-    .step { margin-bottom: 2rem; }
-    .step-eyebrow {
-      font-size: 10px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-tertiary);
-      margin-bottom: 6px;
-    }
-    .step-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--text-primary);
-      margin-bottom: 14px;
-    }
+  @media (max-width: 800px) {
+    .layout { grid-template-columns: 1fr; }
+    .preview-col { position: static; border-left: none; border-top: 2px solid var(--line); margin-top: 40px; padding-top: 32px; padding-left: 0; }
+  }
 
-    .field { margin-bottom: 12px; }
-    .field label {
-      display: block;
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-bottom: 5px;
-    }
+  /* Form column */
+  .form-col {}
 
-    input[type="text"] {
-      display: block;
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 13px;
-      font-family: var(--font);
-      color: var(--text-primary);
-      background: var(--bg);
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-sm);
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input[type="text"]:focus { border-color: var(--text-secondary); }
+  section {
+    border-top: 1px solid var(--line);
+    padding: 32px 0;
+  }
 
-    textarea {
-      display: block;
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 13px;
-      font-family: var(--font);
-      line-height: 1.7;
-      color: var(--text-primary);
-      background: var(--bg);
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-sm);
-      resize: vertical;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    textarea:focus { border-color: var(--text-secondary); }
+  section:first-of-type {
+    border-top: none;
+    padding-top: 8px;
+  }
 
-    .radio-row { display: flex; gap: 6px; flex-wrap: wrap; }
-    .pill {
-      padding: 5px 12px;
-      font-size: 12px;
-      font-family: var(--font);
-      color: var(--text-secondary);
-      background: transparent;
-      border: 0.5px solid var(--border-mid);
-      border-radius: 99px;
-      cursor: pointer;
-      transition: all 0.12s;
-      line-height: 1.4;
-    }
-    .pill:hover { background: var(--bg-secondary); }
-    .pill.on {
-      background: var(--bg-secondary);
-      color: var(--text-primary);
-      border-color: var(--border-mid);
-      font-weight: 500;
-    }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
 
-    .divider {
-      height: 0.5px;
-      background: var(--border);
-      margin: 1.75rem 0;
-    }
+  .section-num {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 32px;
+    line-height: 1;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
 
-    .two-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 400px) { .two-inputs { grid-template-columns: 1fr; } }
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    line-height: 1.1;
+    font-weight: 400;
+  }
 
-    /* ── Preview side ── */
-    .preview-col { position: sticky; top: 2rem; }
+  .field {
+    margin-bottom: 20px;
+  }
 
-    .preview-box {
-      background: var(--bg-secondary);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem;
-    }
+  label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
 
-    .preview-subject {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-primary);
-      padding-bottom: 10px;
-      border-bottom: 0.5px solid var(--border);
-      margin-bottom: 14px;
-    }
-    .preview-subject span {
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--text-tertiary);
-      margin-right: 6px;
-    }
+  .hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+    font-style: italic;
+    line-height: 1.5;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+  }
 
-    .preview-body {
-      font-size: 13px;
-      line-height: 1.85;
-      color: var(--text-primary);
-      white-space: pre-wrap;
-      min-height: 200px;
-    }
+  input[type="text"],
+  textarea {
+    width: 100%;
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    padding: 12px 14px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 14px;
+    color: var(--ink);
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+  }
 
-    /* ── Meters ── */
-    .meters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 16px;
-    }
-    @media (max-width: 400px) { .meters { grid-template-columns: repeat(2, 1fr); } }
+  input[type="text"]:focus,
+  textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
 
-    .meter {
-      background: var(--bg);
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-    }
-    .meter-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: var(--text-tertiary);
-      margin-bottom: 3px;
-    }
-    .meter-value {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-    .meter-value.good { color: var(--green); }
-    .meter-value.warn { color: var(--amber); }
-    .meter-value.bad  { color: var(--red); }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+  }
 
-    /* ── Copy button ── */
-    .copy-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      width: 100%;
-      margin-top: 14px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-family: var(--font);
-      color: var(--text-primary);
-      background: transparent;
-      border: 0.5px solid var(--border-mid);
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: background 0.12s;
-    }
-    .copy-btn:hover { background: var(--bg-tertiary); }
-    .copy-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-    /* ── Footer ── */
-    .footer {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 1rem 2rem 3rem;
-      font-size: 11px;
-      color: var(--text-tertiary);
-    }
+  .radio-group label {
+    display: inline-flex;
+    align-items: center;
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    padding: 8px 14px;
+    cursor: pointer;
+    margin-bottom: 0;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 13px;
+    font-weight: 400;
+    transition: background 0.1s ease;
+  }
 
-    /* ── Hidden gap detail ── */
-    #gap-detail-wrap { display: none; margin-top: 10px; }
-    #gap-detail-wrap.visible { display: block; }
-  </style>
+  .radio-group label:hover { background: #EEE9DA; }
+  .radio-group input { display: none; }
+  .radio-group input:checked + span {
+    background: var(--ink);
+    color: var(--bg);
+    padding: 8px 14px;
+    margin: -8px -14px;
+  }
+
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 540px) {
+    .row-2 { grid-template-columns: 1fr; }
+    h1 { font-size: 44px; }
+    .section-title { font-size: 22px; }
+    .section-num { font-size: 26px; }
+  }
+
+  /* Preview column */
+  .preview-col {
+    position: sticky;
+    top: 24px;
+    border-left: 2px solid var(--line);
+    padding-left: 40px;
+    padding-top: 8px;
+  }
+
+  .preview-eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+
+  .preview-box {
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    padding: 20px;
+  }
+
+  .preview-subject-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .preview-subject {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+
+  .preview-body {
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--ink);
+    white-space: pre-wrap;
+    min-height: 180px;
+  }
+
+  /* Meters */
+  .meters {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 20px;
+    border: 1px solid var(--line);
+    border-right: none;
+  }
+
+  .meter {
+    padding: 10px 12px;
+    border-right: 1px solid var(--line);
+  }
+
+  .meter-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+  }
+
+  .meter-value {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .meter-value.good { color: #2D7A3F; }
+  .meter-value.warn { color: #92400e; }
+  .meter-value.bad  { color: var(--accent); }
+
+  /* Copy button */
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px 22px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bg);
+    background: var(--ink);
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    border-radius: 0;
+    transition: transform 0.08s ease;
+  }
+
+  .copy-btn:hover { transform: translateY(-1px); }
+  .copy-btn:active { transform: translateY(0); }
+  .copy-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* Gap detail */
+  #gap-detail-wrap { display: none; }
+  #gap-detail-wrap.visible { display: block; margin-top: 12px; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 12px 20px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    transition: transform 0.25s ease;
+    z-index: 100;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  footer {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+</style>
 </head>
 <body>
 
-  <header class="header">
-    <p class="header-label">Tool — Darius</p>
-    <h1>Application builder.</h1>
-    <p>Fill in once per application. Your email assembles on the right in real time.</p>
+<div class="container">
+  <header>
+    <div class="eyebrow">Tool — Darius</div>
+    <h1>Application<br/>builder.</h1>
+    <p class="lede">Fill in once per application. Your email assembles on the right in real time — the meters tell you if it's landing right before you send.</p>
   </header>
 
-  <main class="main">
+  <div class="layout">
 
     <!-- LEFT: FORM -->
     <div class="form-col">
-      <p class="col-label">Your details</p>
 
-      <!-- 01 -->
-      <div class="step">
-        <p class="step-eyebrow">01</p>
-        <p class="step-title">The basics.</p>
+      <section>
+        <div class="section-head">
+          <div class="section-num">01</div>
+          <div class="section-title">The basics.</div>
+        </div>
 
-        <div class="two-inputs">
+        <div class="row-2">
           <div class="field">
-            <label>Studio / company</label>
-            <input type="text" id="studio" placeholder="e.g. Studio Dumbar" oninput="build()" />
+            <label for="studio">Studio / company</label>
+            <input type="text" id="studio" placeholder="Studio Dumbar" oninput="build()" />
           </div>
           <div class="field">
-            <label>Contact name</label>
-            <input type="text" id="contact" placeholder="e.g. Rosa" oninput="build()" />
+            <label for="contact">Contact name</label>
+            <input type="text" id="contact" placeholder="Rosa" oninput="build()" />
           </div>
         </div>
 
         <div class="field">
           <label>Approach</label>
-          <div class="radio-row">
-            <button class="pill on" onclick="pick(this,'approach','cold')">Cold</button>
-            <button class="pill" onclick="pick(this,'approach','posted')">Posted role</button>
+          <div class="radio-group">
+            <label><input type="radio" name="approach" value="cold" checked onchange="build()" /><span>Cold</span></label>
+            <label><input type="radio" name="approach" value="posted" onchange="build()" /><span>Posted role</span></label>
           </div>
         </div>
 
         <div class="field">
           <label>Sending via</label>
-          <div class="radio-row">
-            <button class="pill on" onclick="pick(this,'send','email')">Email</button>
-            <button class="pill" onclick="pick(this,'send','form')">Form</button>
-            <button class="pill" onclick="pick(this,'send','linkedin')">LinkedIn</button>
+          <div class="radio-group">
+            <label><input type="radio" name="send" value="email" checked onchange="build()" /><span>Email</span></label>
+            <label><input type="radio" name="send" value="form" onchange="build()" /><span>Form</span></label>
+            <label><input type="radio" name="send" value="linkedin" onchange="build()" /><span>LinkedIn</span></label>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="divider"></div>
-
-      <!-- 02 -->
-      <div class="step">
-        <p class="step-eyebrow">02</p>
-        <p class="step-title">Who they are.</p>
+      <section>
+        <div class="section-head">
+          <div class="section-num">02</div>
+          <div class="section-title">Who they are.</div>
+        </div>
 
         <div class="field">
-          <label>One project you genuinely rated — name it</label>
-          <input type="text" id="project" placeholder="e.g. the Volta rebrand" oninput="build()" />
+          <label for="project">One project you genuinely rated — name it</label>
+          <input type="text" id="project" placeholder="The Volta rebrand" oninput="build()" />
         </div>
-        <div class="field">
-          <label>Why that project — the actual craft move (2 sentences max)</label>
-          <textarea id="why" rows="3" placeholder="Be specific. This becomes the observation hook." oninput="build()"></textarea>
-        </div>
-        <div class="field">
-          <label>No specific project? Hook instead</label>
-          <input type="text" id="alt_hook" placeholder="Location, client roster, craft problem the role poses..." oninput="build()" />
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- 03 -->
-      <div class="step">
-        <p class="step-eyebrow">03</p>
-        <p class="step-title">What you bring.</p>
 
         <div class="field">
-          <label>Strongest project in your portfolio</label>
-          <input type="text" id="proj1" placeholder="Project name or brief description" oninput="build()" />
+          <label for="why">Why that project — the actual craft move</label>
+          <p class="hint">Be specific. Two sentences max. This becomes the observation hook.</p>
+          <textarea id="why" rows="3" placeholder="The type rhythm pulled from the music's syncopation. A system that comes from the thing itself instead of sitting on top of it." oninput="build()"></textarea>
         </div>
-        <div class="field">
-          <label>Second project (optional)</label>
-          <input type="text" id="proj2" placeholder="Project name or brief description" oninput="build()" />
-        </div>
-        <div class="field">
-          <label>Structural mismatch — visa, seniority, location?</label>
-          <input type="text" id="mismatch" placeholder="Write 'none' if all clear" oninput="build()" />
-        </div>
-      </div>
 
-      <div class="divider"></div>
+        <div class="field">
+          <label for="alt_hook">No specific project? Hook instead</label>
+          <p class="hint">Location, client roster, position in industry, the craft problem the role poses. Leave blank if section above is filled.</p>
+          <input type="text" id="alt_hook" placeholder="They're doing music and culture work from the heart of where it actually happens." oninput="build()" />
+        </div>
+      </section>
 
-      <!-- 04 -->
-      <div class="step">
-        <p class="step-eyebrow">04</p>
-        <p class="step-title">The gap.</p>
+      <section>
+        <div class="section-head">
+          <div class="section-num">03</div>
+          <div class="section-title">What you bring.</div>
+        </div>
+
+        <div class="field">
+          <label for="proj1">Strongest project in your portfolio</label>
+          <input type="text" id="proj1" placeholder="Radiant Grid" oninput="build()" />
+        </div>
+
+        <div class="field">
+          <label for="proj2">Second project (optional)</label>
+          <input type="text" id="proj2" placeholder="Apex Athletes" oninput="build()" />
+        </div>
+
+        <div class="field">
+          <label for="mismatch">Structural mismatch — visa, seniority, location?</label>
+          <p class="hint">Write "none" if all clear.</p>
+          <input type="text" id="mismatch" placeholder="None" oninput="build()" />
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head">
+          <div class="section-num">04</div>
+          <div class="section-title">The gap.</div>
+        </div>
 
         <div class="field">
           <label>Does this role want something your portfolio doesn't show?</label>
-          <div class="radio-row">
-            <button class="pill on" onclick="pick(this,'gap','no')">No gap</button>
-            <button class="pill" onclick="pick(this,'gap','yes')">Yes</button>
+          <div class="radio-group">
+            <label><input type="radio" name="gap" value="no" checked onchange="toggleGap(this)" /><span>No gap</span></label>
+            <label><input type="radio" name="gap" value="yes" onchange="toggleGap(this)" /><span>Yes</span></label>
           </div>
         </div>
+
         <div id="gap-detail-wrap">
           <div class="field">
-            <label>What — stated flat, no apology</label>
-            <textarea id="gap_detail" rows="2" placeholder="Don't pre-empt it. Name it." oninput="build()"></textarea>
+            <label for="gap_detail">What — stated flat, no apology</label>
+            <p class="hint">Don't pre-empt it. Name it. The ceiling is the sell.</p>
+            <textarea id="gap_detail" rows="2" placeholder="Motion isn't in the PDF. After Effects is part of how I work — can show a reel if useful." oninput="build()"></textarea>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="divider"></div>
-
-      <!-- 05 -->
-      <div class="step">
-        <p class="step-eyebrow">05</p>
-        <p class="step-title">The ask.</p>
+      <section>
+        <div class="section-head">
+          <div class="section-num">05</div>
+          <div class="section-title">The ask.</div>
+        </div>
 
         <div class="field">
           <label>What are you actually asking for?</label>
-          <div class="radio-row">
-            <button class="pill on" onclick="pick(this,'ask','interview')">Interview</button>
-            <button class="pill" onclick="pick(this,'ask','coffee')">Coffee</button>
-            <button class="pill" onclick="pick(this,'ask','call')">Call</button>
-            <button class="pill" onclick="pick(this,'ask','radar')">Keep on radar</button>
+          <div class="radio-group">
+            <label><input type="radio" name="ask" value="interview" checked onchange="build()" /><span>Interview</span></label>
+            <label><input type="radio" name="ask" value="coffee" onchange="build()" /><span>Coffee</span></label>
+            <label><input type="radio" name="ask" value="call" onchange="build()" /><span>Call</span></label>
+            <label><input type="radio" name="ask" value="radar" onchange="build()" /><span>Keep on radar</span></label>
           </div>
         </div>
 
         <div class="field">
-          <label>Anything extra — connection, shared contact, reason this studio specifically matters</label>
-          <input type="text" id="extra" placeholder="Leave blank if nothing" oninput="build()" />
+          <label for="extra">Anything extra</label>
+          <p class="hint">A connection, shared contact, moment you crossed paths, reason this studio specifically matters. Leave blank if nothing.</p>
+          <input type="text" id="extra" placeholder="Jack Llewellyn judged Radiant Grid at Pentagram and gave feedback." oninput="build()" />
         </div>
-      </div>
+      </section>
 
     </div>
 
     <!-- RIGHT: PREVIEW -->
     <div class="preview-col">
-      <p class="col-label">Live preview</p>
+      <div class="preview-eyebrow">Live preview</div>
+
       <div class="preview-box">
-        <div class="preview-subject">
-          <span>Subject</span><span id="out-subject">Waiting for input...</span>
-        </div>
+        <div class="preview-subject-label">Subject</div>
+        <div class="preview-subject" id="out-subject">Waiting for input...</div>
         <div class="preview-body" id="out-body">Fill in the fields on the left and your email assembles here.</div>
-
-        <div class="meters">
-          <div class="meter">
-            <div class="meter-label">Words</div>
-            <div class="meter-value" id="m-words">—</div>
-          </div>
-          <div class="meter">
-            <div class="meter-label">Length</div>
-            <div class="meter-value" id="m-length">—</div>
-          </div>
-          <div class="meter">
-            <div class="meter-label">Hook</div>
-            <div class="meter-value" id="m-hook">—</div>
-          </div>
-          <div class="meter">
-            <div class="meter-label">Ask</div>
-            <div class="meter-value" id="m-ask">—</div>
-          </div>
-        </div>
-
-        <button class="copy-btn" onclick="copyAll()">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy email
-        </button>
       </div>
+
+      <div class="meters">
+        <div class="meter">
+          <div class="meter-label">Words</div>
+          <div class="meter-value" id="m-words">—</div>
+        </div>
+        <div class="meter">
+          <div class="meter-label">Length</div>
+          <div class="meter-value" id="m-length">—</div>
+        </div>
+        <div class="meter">
+          <div class="meter-label">Hook</div>
+          <div class="meter-value" id="m-hook">—</div>
+        </div>
+        <div class="meter">
+          <div class="meter-label">Ask</div>
+          <div class="meter-value" id="m-ask">—</div>
+        </div>
+      </div>
+
+      <button class="copy-btn" onclick="copyAll()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="0"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy email
+      </button>
     </div>
 
-  </main>
+  </div>
 
-  <footer class="footer">Built for Darius — a tool, not a template.</footer>
+  <footer>Built for Darius — a tool, not a template.</footer>
+</div>
 
-  <script>
-    const state = { approach: 'cold', send: 'email', gap: 'no', ask: 'interview' };
+<div class="toast" id="toast"></div>
 
-    function pick(el, key, val) {
-      state[key] = val;
-      el.closest('.radio-row').querySelectorAll('.pill').forEach(b => b.classList.remove('on'));
-      el.classList.add('on');
-      if (key === 'gap') {
-        const wrap = document.getElementById('gap-detail-wrap');
-        wrap.classList.toggle('visible', val === 'yes');
-      }
-      build();
-    }
+<script>
+  function v(id) { return (document.getElementById(id).value || '').trim(); }
+  function radio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
 
-    function v(id) {
-      return (document.getElementById(id).value || '').trim();
-    }
-
-    function build() {
-      const studio   = v('studio')   || '[Studio]';
-      const contact  = v('contact')  || 'there';
-      const project  = v('project');
-      const why      = v('why');
-      const alt_hook = v('alt_hook');
-      const proj1    = v('proj1');
-      const proj2    = v('proj2');
-      const mismatch = v('mismatch');
-      const gap_det  = v('gap_detail');
-      const extra    = v('extra');
-
-      // Subject
-      let subject = state.approach === 'cold'
-        ? 'Designer who builds brands that move — portfolio attached'
-        : 'Application — junior identity designer';
-
-      // Body assembly
-      let body = `Hi ${contact},\n\n`;
-
-      if (project && why) {
-        body += `I've been following ${studio}'s work — ${project} stuck with me. ${why}\n\n`;
-      } else if (project) {
-        body += `I've been following ${studio}'s work — ${project} is the kind of thinking I want to be around.\n\n`;
-      } else if (alt_hook) {
-        body += `I've been looking at ${studio} — ${alt_hook}.\n\n`;
-      }
-
-      body += `I'm a junior identity designer. I work digitally-first — every brand system I build is designed to move, not just sit on a page. Logo, UI, motion, occasionally print.\n\n`;
-
-      if (proj1) {
-        body += `The work that shows this best: ${proj1}`;
-        if (proj2) body += `, and ${proj2}`;
-        body += `.\n\n`;
-      }
-
-      if (state.gap === 'yes' && gap_det) {
-        body += `${gap_det}\n\n`;
-      }
-
-      if (extra) {
-        body += `${extra}\n\n`;
-      }
-
-      const asks = {
-        interview: `Would love the chance to come in.\n\nPortfolio attached.`,
-        coffee:    `If you ever have 20 minutes for a coffee, I'd take it.\n\nPortfolio attached.`,
-        call:      `Happy to jump on a call if that's easier.\n\nPortfolio attached.`,
-        radar:     `Not expecting an opening — but if you're ever looking, I'd genuinely love to be in the mix.\n\nPortfolio attached.`
-      };
-      body += asks[state.ask];
-
-      if (mismatch && mismatch.toLowerCase() !== 'none' && mismatch !== '') {
-        body += `\n\n(${mismatch})`;
-      }
-
-      document.getElementById('out-subject').textContent = subject;
-      document.getElementById('out-body').textContent = body;
-
-      // Meters
-      const words = body.split(/\s+/).filter(Boolean).length;
-
-      const wEl = document.getElementById('m-words');
-      wEl.textContent = words;
-      wEl.className = 'meter-value ' + (words < 60 ? 'warn' : words <= 130 ? 'good' : 'bad');
-
-      const lEl = document.getElementById('m-length');
-      if (words < 60)       { lEl.textContent = 'Too short'; lEl.className = 'meter-value warn'; }
-      else if (words <= 130){ lEl.textContent = 'Good';      lEl.className = 'meter-value good'; }
-      else                  { lEl.textContent = 'Too long';  lEl.className = 'meter-value bad';  }
-
-      const hasHook = !!(project || alt_hook);
-      const hookQuality = hasHook && why ? 'good' : hasHook ? 'warn' : 'bad';
-      const hookLabel   = hasHook && why ? 'Specific' : hasHook ? 'Thin' : 'Missing';
-      const hEl = document.getElementById('m-hook');
-      hEl.textContent = hookLabel;
-      hEl.className = 'meter-value ' + hookQuality;
-
-      const aEl = document.getElementById('m-ask');
-      aEl.textContent = state.ask.charAt(0).toUpperCase() + state.ask.slice(1);
-      aEl.className = 'meter-value good';
-    }
-
-    function copyAll() {
-      const subject = document.getElementById('out-subject').textContent;
-      const body    = document.getElementById('out-body').textContent;
-      const text    = `Subject: ${subject}\n\n${body}`;
-      navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        const orig = btn.innerHTML;
-        btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"/></svg> Copied`;
-        setTimeout(() => { btn.innerHTML = orig; }, 1800);
-      });
-    }
-
+  function toggleGap(el) {
+    document.getElementById('gap-detail-wrap').classList.toggle('visible', el.value === 'yes');
     build();
-  </script>
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  function build() {
+    const studio   = v('studio')   || '[Studio]';
+    const contact  = v('contact')  || 'there';
+    const project  = v('project');
+    const why      = v('why');
+    const alt_hook = v('alt_hook');
+    const proj1    = v('proj1');
+    const proj2    = v('proj2');
+    const mismatch = v('mismatch');
+    const gap_det  = v('gap_detail');
+    const extra    = v('extra');
+    const approach = radio('approach') || 'cold';
+    const ask      = radio('ask') || 'interview';
+    const hasGap   = radio('gap') === 'yes';
+
+    const subject = approach === 'cold'
+      ? 'Designer who builds brands that move — portfolio attached'
+      : 'Application — junior identity designer';
+
+    let body = `Hi ${contact},\n\n`;
+
+    if (project && why) {
+      body += `I've been following ${studio}'s work — ${project} stuck with me. ${why}\n\n`;
+    } else if (project) {
+      body += `I've been following ${studio}'s work — ${project} is the kind of thinking I want to be around.\n\n`;
+    } else if (alt_hook) {
+      body += `I've been looking at ${studio} — ${alt_hook}.\n\n`;
+    }
+
+    body += `I'm a junior identity designer. I work digitally-first — every brand system I build is designed to move, not just sit on a page. Logo, UI, motion, occasionally print.\n\n`;
+
+    if (proj1) {
+      body += `The work that shows this best: ${proj1}`;
+      if (proj2) body += `, and ${proj2}`;
+      body += `.\n\n`;
+    }
+
+    if (hasGap && gap_det) {
+      body += `${gap_det}\n\n`;
+    }
+
+    if (extra) {
+      body += `${extra}\n\n`;
+    }
+
+    const asks = {
+      interview: `Would love the chance to come in.\n\nPortfolio attached.`,
+      coffee:    `If you ever have 20 minutes for a coffee, I'd take it.\n\nPortfolio attached.`,
+      call:      `Happy to jump on a call if that's easier.\n\nPortfolio attached.`,
+      radar:     `Not expecting an opening — but if you're ever looking, I'd genuinely love to be in the mix.\n\nPortfolio attached.`
+    };
+    body += asks[ask];
+
+    if (mismatch && mismatch.toLowerCase() !== 'none' && mismatch !== '') {
+      body += `\n\n(${mismatch})`;
+    }
+
+    document.getElementById('out-subject').textContent = subject;
+    document.getElementById('out-body').textContent = body;
+
+    const words = body.split(/\s+/).filter(Boolean).length;
+
+    const wEl = document.getElementById('m-words');
+    wEl.textContent = words;
+    wEl.className = 'meter-value ' + (words < 60 ? 'warn' : words <= 130 ? 'good' : 'bad');
+
+    const lEl = document.getElementById('m-length');
+    if (words < 60)        { lEl.textContent = 'Too short'; lEl.className = 'meter-value warn'; }
+    else if (words <= 130) { lEl.textContent = 'Good';      lEl.className = 'meter-value good'; }
+    else                   { lEl.textContent = 'Too long';  lEl.className = 'meter-value bad';  }
+
+    const hasHook = !!(project || alt_hook);
+    const hookQ   = hasHook && why ? 'good' : hasHook ? 'warn' : 'bad';
+    const hookL   = hasHook && why ? 'Specific' : hasHook ? 'Thin' : 'Missing';
+    const hEl = document.getElementById('m-hook');
+    hEl.textContent = hookL;
+    hEl.className = 'meter-value ' + hookQ;
+
+    const aEl = document.getElementById('m-ask');
+    aEl.textContent = ask.charAt(0).toUpperCase() + ask.slice(1);
+    aEl.className = 'meter-value good';
+  }
+
+  function copyAll() {
+    const subject = document.getElementById('out-subject').textContent;
+    const body    = document.getElementById('out-body').textContent;
+    const text    = `Subject: ${subject}\n\n${body}`;
+    navigator.clipboard.writeText(text)
+      .then(() => showToast('Copied to clipboard'))
+      .catch(() => showToast('Copy failed — select manually'));
+  }
+
+  build();
+</script>
 
 </body>
 </html>

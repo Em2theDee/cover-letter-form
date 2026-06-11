@@ -314,6 +314,31 @@
     transition: transform 0.08s ease;
   }
 
+  .mailto-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px 22px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.08s ease;
+  }
+
+  .mailto-btn:hover { transform: translateY(-1px); }
+  .mailto-btn:active { transform: translateY(0); }
+  .mailto-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
   .clear-btn {
     display: block;
     width: 100%;
@@ -422,9 +447,16 @@
         <div class="field">
           <label>Sending via</label>
           <div class="radio-group">
-            <label><input type="radio" name="send" value="email" checked onchange="build()" /><span>Email</span></label>
-            <label><input type="radio" name="send" value="form" onchange="build()" /><span>Form</span></label>
-            <label><input type="radio" name="send" value="linkedin" onchange="build()" /><span>LinkedIn</span></label>
+            <label><input type="radio" name="send" value="email" checked onchange="toggleEmail(this)" /><span>Email</span></label>
+            <label><input type="radio" name="send" value="form" onchange="toggleEmail(this)" /><span>Form</span></label>
+            <label><input type="radio" name="send" value="linkedin" onchange="toggleEmail(this)" /><span>LinkedIn</span></label>
+          </div>
+        </div>
+
+        <div id="email-wrap">
+          <div class="field">
+            <label for="recipient_email">Their email address</label>
+            <input type="text" id="recipient_email" placeholder="hello@studiodumbar.com" oninput="build()" />
           </div>
         </div>
       </section>
@@ -547,6 +579,10 @@
         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="0"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Copy email
       </button>
+      <a class="mailto-btn" id="mailto-link" href="#" style="display:none;">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="0"/><path d="m2 4 10 9 10-9"/></svg>
+        Open in mail
+      </a>
       <button class="clear-btn" onclick="clearAll()">Clear all</button>
     </div>
 
@@ -560,6 +596,11 @@
 <script>
   function v(id) { return (document.getElementById(id).value || '').trim(); }
   function radio(name) { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : ''; }
+
+  function toggleEmail(el) {
+    document.getElementById('email-wrap').style.display = el.value === 'email' ? 'block' : 'none';
+    build();
+  }
 
   function toggleTitle(el) {
     document.getElementById('job-title-wrap').style.display = el.value === 'posted' ? 'block' : 'none';
@@ -661,6 +702,17 @@
     const aEl = document.getElementById('m-ask');
     aEl.textContent = 'Closer';
     aEl.className = 'meter-value good';
+
+    const email = v('recipient_email');
+    const mailtoLink = document.getElementById('mailto-link');
+    if (radio('send') === 'email' && email) {
+      const subject = document.getElementById('out-subject').textContent;
+      const bodyText = document.getElementById('out-body').textContent;
+      mailtoLink.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyText)}`;
+      mailtoLink.style.display = 'flex';
+    } else {
+      mailtoLink.style.display = 'none';
+    }
   }
 
   function clearAll() {
@@ -671,6 +723,8 @@
     document.querySelector('input[name="ask"][value="interview"]').checked = true;
     document.getElementById('gap-detail-wrap').classList.remove('visible');
     document.getElementById('job-title-wrap').style.display = 'none';
+    document.getElementById('email-wrap').style.display = 'block';
+    document.getElementById('mailto-link').style.display = 'none';
     build();
   }
 
